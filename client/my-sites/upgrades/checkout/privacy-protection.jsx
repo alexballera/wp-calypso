@@ -1,7 +1,8 @@
 /**
  * External dependencies
  */
-const React = require( 'react' );
+const React = require( 'react' ),
+	classnames = require( 'classnames' );
 
 /**
  * Internal dependencies
@@ -17,11 +18,6 @@ module.exports = React.createClass( {
 	handleDialogSelect: function( options, event ) {
 		event.preventDefault();
 		this.props.onDialogSelect( options );
-	},
-
-	handleButtonSelect: function( options, event ) {
-		event.preventDefault();
-		this.props.onButtonSelect( options );
 	},
 
 	handleDialogOpen: function() {
@@ -72,14 +68,14 @@ module.exports = React.createClass( {
 			<div>
 				<Card className="checkout__privacy-protection-checkbox">
 					<input type="checkbox" id="privacyProtectionCheckbox" onChange={ this.props.onCheckboxChange } checked={ this.props.isChecked } />
-					<div className="privacy-protection-checkbox__description">
+					<div className="checkout__privacy-protection-checkbox__description">
 						<label htmlFor="privacyProtectionCheckbox">
 							<strong className="checkout__privacy-protection-checkbox-heading">
 								{ this.translate( 'Please keep my information private.', { textOnly: true } ) }
 							</strong>
 						</label>
 						<p className={ 'checkout__privacy-protection-price-text' }>
-							<span className={ ( hasOneFreePrivacy && 'free-with-plan' ) }>
+							<span className={ classnames( { 'free-with-plan': hasOneFreePrivacy } ) }>
 								{
 									this.translate(
 										'%(cost)s per year',
@@ -107,6 +103,7 @@ module.exports = React.createClass( {
 					countriesList={ this.props.countriesList }
 					fields={ this.props.fields }
 					isVisible={ this.props.isDialogVisible }
+					isFree={ hasOneFreePrivacy }
 					onSelect={ this.handleDialogSelect }
 					onClose={ this.handleDialogClose } />
 			</div>

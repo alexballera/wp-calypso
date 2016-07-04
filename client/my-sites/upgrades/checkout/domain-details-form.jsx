@@ -170,7 +170,6 @@ export default React.createClass( {
 				fields={ this.state.form }
 				isChecked={ this.allDomainRegistrationsHavePrivacy() }
 				onCheckboxChange={ this.handleCheckboxChange }
-				onButtonSelect={ this.handlePrivacyDialogButtonSelect }
 				onDialogClose={ this.closeDialog }
 				onDialogOpen={ this.openDialog }
 				onDialogSelect={ this.handlePrivacyDialogSelect }
@@ -249,11 +248,7 @@ export default React.createClass( {
 	},
 
 	handleCheckboxChange() {
-		if ( this.allDomainRegistrationsHavePrivacy() ) {
-			removePrivacyFromAllDomains();
-		} else {
-			addPrivacyToAllDomains();
-		}
+		this.setPrivacyProtectionSubscriptions( ! this.allDomainRegistrationsHavePrivacy() );
 	},
 
 	closeDialog() {
@@ -296,25 +291,6 @@ export default React.createClass( {
 		} );
 	},
 
-	handlePrivacyDialogButtonSelect( options ) {
-		this.formStateController.handleSubmit( ( hasErrors ) => {
-			this.recordSubmit();
-
-			if ( hasErrors ) {
-				this.focusFirstError();
-				return;
-			}
-
-			if ( options.addPrivacy ) {
-				this.finish( { addPrivacy: true } );
-			} else if ( options.skipPrivacyDialog ) {
-				this.finish( { addPrivacy: false } );
-			} else {
-				this.openDialog();
-			}
-		} );
-	},
-
 	recordSubmit() {
 		const errors = formState.getErrorMessages( this.state.form );
 		analytics.tracks.recordEvent( 'calypso_contact_information_form_submit', {
@@ -330,6 +306,8 @@ export default React.createClass( {
 			this.recordSubmit();
 
 			if ( hasErrors ) {
+				this.setPrivacyProtectionSubscriptions( options.addPrivacy !== false );
+				this.closeDialog();
 				return;
 			}
 
@@ -338,13 +316,17 @@ export default React.createClass( {
 	},
 
 	finish( options = {} ) {
-		if ( options.addPrivacy ) {
-			addPrivacyToAllDomains();
-		} else if ( options.addPrivacy === false ) {
-			removePrivacyFromAllDomains();
-		}
+		this.setPrivacyProtectionSubscriptions( options.addPrivacy !== false );
 
 		setDomainDetails( formState.getAllFieldValues( this.state.form ) );
+	},
+
+	setPrivacyProtectionSubscriptions( enable ) {
+		if ( enable ) {
+			addPrivacyToAllDomains();
+		} else {
+			removePrivacyFromAllDomains();
+		}
 	},
 
 	render() {
