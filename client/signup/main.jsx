@@ -51,9 +51,6 @@ const Signup = React.createClass( {
 	},
 
 	getInitialState() {
-		/**
-		 * Pass the redux store to SignupDependencyStore.
-		 */
 		SignupDependencyStore.setReduxStore( this.context.store );
 
 		return {
