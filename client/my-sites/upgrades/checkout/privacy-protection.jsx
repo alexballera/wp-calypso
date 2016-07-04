@@ -71,11 +71,13 @@ module.exports = React.createClass( {
 		return (
 			<div>
 				<Card className="checkout__privacy-protection-checkbox">
-					<input type="checkbox" onChange={ this.props.onCheckboxChange } checked={ this.props.isChecked } />
+					<input type="checkbox" id="privacyProtectionCheckbox" onChange={ this.props.onCheckboxChange } checked={ this.props.isChecked } />
 					<div className="privacy-protection-checkbox__description">
-						<strong className="checkout__privacy-protection-checkbox-heading">
-							{ this.translate( 'Please keep my information private.', { textOnly: true } ) }
-						</strong>
+						<label htmlFor="privacyProtectionCheckbox">
+							<strong className="checkout__privacy-protection-checkbox-heading">
+								{ this.translate( 'Please keep my information private.', { textOnly: true } ) }
+							</strong>
+						</label>
 						<p className={ 'checkout__privacy-protection-price-text' }>
 							<span className={ ( hasOneFreePrivacy && 'free-with-plan' ) }>
 								{
