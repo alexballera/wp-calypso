@@ -8,6 +8,8 @@ import get from 'lodash/get';
 import includes from 'lodash/includes';
 import invoke from 'lodash/invoke';
 import debugFactory from 'debug';
+import i18n from 'i18n-calypso';
+import filter from 'lodash/filter';
 
 /**
  * Internal dependencies
@@ -24,8 +26,10 @@ import {
 import {
 	featuresList,
 	plansList,
+	PLAN_FREE,
 	PLAN_PERSONAL,
-	PLAN_FREE
+	PLAN_PREMIUM,
+	WORDADS_INSTANT
 } from 'lib/plans/constants';
 import { createSitePlanObject } from 'state/sites/plans/assembler';
 import SitesList from 'lib/sites-list';
@@ -208,4 +212,34 @@ export function plansLink( url, site, intervalType ) {
 	}
 
 	return url;
+}
+
+export function applyTestFiltersToPlansList( planName, testFilters = {
+	wordadsInstantActivation: true,
+	googleVouchers: true,
+	wordpressAdCredits: true
+
+} ) {
+	const {
+		wordadsInstantActivation,
+		googleVouchers,
+		wordpressAdCredits
+	} = testFilters;
+
+	const filteredPlansList = Object.assign( {}, plansList[ planName ] );
+
+	if ( wordadsInstantActivation ) {
+		if ( ! isWordadsInstantActivationEnabled() ) {
+			filteredPlansList.getFeatures = () => filter(
+				plansList[ planName ].getFeatures(),
+				value => value !== WORDADS_INSTANT
+			);
+		} else if ( planName === PLAN_PREMIUM ) {
+			filteredPlansList.getDescription = () =>
+				i18n.translate( 'Your own domain name, powerful customization' +
+				' options, easy monetization with WordAds and lots of space for audio and video.' );
+		}
+	}
+
+	return filteredPlansList;
 }
